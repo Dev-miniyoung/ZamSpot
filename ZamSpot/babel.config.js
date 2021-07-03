@@ -25,6 +25,10 @@ module.exports = {
             rootPathSuffix: './src/stylesheets',
             rootPathPrefix: '@stylesheets',
           },
+          {
+            rootPathSuffix: './src/navigation',
+            rootPathPrefix: '@navigation',
+          },
         ],
       },
     ],
