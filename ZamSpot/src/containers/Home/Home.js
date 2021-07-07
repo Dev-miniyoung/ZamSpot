@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, StatusBar } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 const screen = Dimensions.get('window');
@@ -19,16 +19,17 @@ const Home = () => {
           longitude: 127.02579856902875,
           latitudeDelta: LATITUDE_DELTA,
           longitudeDelta: LOGITUDE_DELTA,
-        }}
-      />
-      <Marker
-        coordinate={{
-          latitude: 37.49954770759741,
-          longitude: 127.02579856902875,
-        }}
-        title="this is a marker"
-        description="this is a marker example"
-      />
+        }}>
+        <Marker
+          coordinate={{
+            latitude: 37.49954770759741,
+            longitude: 127.02579856902875,
+          }}
+          title="this is a marker"
+          description="this is a marker example"
+          pinColor="black"
+        />
+      </MapView>
     </View>
   );
 };
