@@ -6,9 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import _ from 'lodash';
 
-interface Props {}
-
-const SearchInput: FC<Props> = () => {
+const SearchInput: FC = () => {
   const { i18n } = useTranslation();
   const navigation = useNavigation();
 
@@ -42,9 +40,6 @@ const SearchInput: FC<Props> = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: unit(55),
-    left: unit(0),
     width: unit(360),
     height: unit(44),
     paddingRight: unit(16),
@@ -67,7 +62,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: unit(16),
-    fontWeight: '400',
+    fontWeight: '600',
     color: 'gray',
   },
   iconContainer: {

@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { Marker } from 'react-native-maps';
+import { unit } from '@stylesheets';
 import _ from 'lodash';
 
 const CustomMarker = ({
   coordinate,
   title,
-  description,
   pinColor,
+  description = '',
   customImage = '',
 }) => {
   return (
@@ -31,8 +32,8 @@ const CustomMarker = ({
 
 const styles = StyleSheet.create({
   markerImage: {
-    width: 30,
-    height: 30,
+    width: unit(30),
+    height: unit(30),
   },
 });
 
