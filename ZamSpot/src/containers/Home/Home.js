@@ -1,15 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  Image,
-  SafeAreaView,
-} from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import { StyleSheet, View, Dimensions } from 'react-native';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { SearchInput, CategoryTab } from '@components/Home';
-import { useTranslation } from 'react-i18next';
-import images from '@assets/images';
+import { requestTrackingPermission } from 'react-native-tracking-transparency';
+
 import { unit } from '@stylesheets';
 import _ from 'lodash';
 
@@ -25,24 +19,29 @@ const defaultLogntitude = 127.02579856902875;
 const Home = () => {
   const [mapWidth, setMapWidth] = useState('99%');
 
-  const { i18n } = useTranslation();
   const mapRef = useRef(null);
 
   const updateMapWidth = () => {
     setMapWidth('100%');
   };
 
-  const animateToCoordinate = (lat, long) => {
-    mapRef?.animateToRegion(
-      {
-        latitude: lat,
-        longitude: long,
-      },
-      1000,
-    );
-  };
+  // const animateToCoordinate = (lat, long) => {
+  //   mapRef?.animateToRegion(
+  //     {
+  //       latitude: lat,
+  //       longitude: long,
+  //     },
+  //     1000,
+  //   );
+  // };
 
-  console.log('LOGITUDE_DELTA :>> ', LOGITUDE_DELTA);
+  const trackingStatus = async () => {
+    const response = await requestTrackingPermission();
+    console.log('response :>> ', response);
+  };
+  if (trackingStatus() === 'authorized' || trackingStatus() === 'unavailable') {
+    return null;
+  }
 
   return (
     <View style={styles.container}>

@@ -20,6 +20,8 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>빠른 오류 수정 및 파악을 위해 앱 사용 정보를 추적합니다.</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
