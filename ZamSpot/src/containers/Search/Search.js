@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { unit, getHitSlop } from '@stylesheets';
 import { useTranslation } from 'react-i18next';
+import { searchAddress } from '../../apiActions';
 import _ from 'lodash';
 
 const Search = () => {
@@ -19,6 +20,8 @@ const Search = () => {
   };
 
   const handleChangeKeyword = text => {
+    const response = searchAddress(text);
+    console.log(`response@@@`, response);
     setKeyword(text);
   };
 
@@ -34,26 +37,23 @@ const Search = () => {
     );
   };
 
-  const RenderHeaderCenter = () => {
-    return (
-      <TextInput
-        value={keyword}
-        onChangeText={handleChangeKeyword}
-        placeholder={i18n.t('search')}
-        style={styles.searchTextInput}
-      />
-    );
-  };
-
   return (
     <>
       <Header
         placement="left"
         leftComponent={<RenderHeaderLeft />}
         leftContainerStyle={styles.headerLeftContainer}
-        centerComponent={<RenderHeaderCenter />}
         containerStyle={styles.headerContainer}
       />
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          value={keyword}
+          onChangeText={handleChangeKeyword}
+          placeholder={i18n.t('search')}
+          style={styles.searchTextInput}
+        />
+      </View>
       <View style={styles.container}></View>
     </>
   );
@@ -75,6 +75,14 @@ const styles = StyleSheet.create({
   headerLeftContainer: {
     justifyContent: 'center',
     width: unit(20),
+  },
+  inputContainer: {
+    position: 'absolute',
+    top: unit(40),
+    left: unit(0),
+    paddingLeft: unit(80),
+    paddingRight: unit(12),
+    width: '100%',
   },
   searchTextInput: {
     width: '100%',
