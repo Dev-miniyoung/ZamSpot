@@ -54,7 +54,7 @@ const Search = () => {
             console.log(data, details);
           }}
           query={{
-            key: 'AIzaSyA74DAP3R0oCQeqpt1gcfH-HmwhPB7BAUc',
+            key: apiKey,
             language: 'en',
           }}
           // requestUrl={{
