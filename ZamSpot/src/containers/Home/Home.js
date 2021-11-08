@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { SearchInput, CategoryTab } from '@components/Home';
@@ -37,7 +37,6 @@ const Home = () => {
 
   const trackingStatus = async () => {
     const response = await requestTrackingPermission();
-    console.log('response :>> ', response);
   };
   if (trackingStatus() === 'authorized' || trackingStatus() === 'unavailable') {
     return null;

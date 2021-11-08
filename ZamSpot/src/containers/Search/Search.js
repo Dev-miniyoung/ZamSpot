@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Header } from 'react-native-elements/dist/header';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -32,11 +32,39 @@ const Search = () => {
     );
   };
 
+  const RenderHeaderCenter = () => {
+    return (
+      <View style={styles.centerTitle}>
+        <Text style={styles.titleText}>{i18n.t('searchTitle')}</Text>
+      </View>
+    );
+  };
+
+  const RenderHeaderRight = ({ activeSatus }) => {
+    return (
+      <TouchableOpacity
+        onPress={handleClickGoBack}
+        hitSlop={getHitSlop(10, 10, 10, 10)}>
+        <View style={styles.rightHeader}>
+          <Text
+            style={[
+              styles.titleText,
+              { color: activeSatus ? 'skyblue' : 'gray' },
+            ]}>
+            {i18n.t('submit')}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <>
       <Header
         placement="left"
         leftComponent={<RenderHeaderLeft />}
+        centerComponent={<RenderHeaderCenter />}
+        rightComponent={<RenderHeaderRight activeSatus={false} />}
         leftContainerStyle={styles.headerLeftContainer}
         containerStyle={styles.headerContainer}
       />
@@ -105,9 +133,6 @@ const styles = StyleSheet.create({
     width: unit(20),
   },
   inputContainer: {
-    // position: 'absolute',
-    // top: unit(44),
-    // right: unit(0),
     paddingLeft: unit(12),
     paddingRight: unit(12),
     width: '100%',
@@ -119,6 +144,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: unit(44),
     fontSize: unit(18),
+  },
+  centerTitle: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  titleText: {
+    fontSize: unit(16),
+  },
+  rightHeader: {
+    marginRight: unit(10),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
