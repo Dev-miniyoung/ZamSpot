@@ -1,10 +1,18 @@
 {
   "zamface": "잼페이스",
-  "searchInput": "음식점 검색",
+  "searchInput": "음식점 등록",
   "allCategory": "전체",
   "westernFood": "양식",
   "chineseFood": "중식",
   "koreanFood": "한식",
   "etcFood": "기타",
-  "search": "검색"
+  "search": "검색",
+  "searchTitle": "내가 아는 곳 등록",
+  "submit": "등록하기",
+  "name": "이름",
+  "category": "카테고리",
+  "place": "위치",
+  "placeRegist": "등록완료",
+  "placeEmpty": "위치 등록하러 가기",
+  "rating": "평점"
 }
