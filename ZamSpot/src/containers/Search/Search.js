@@ -1,23 +1,55 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Header } from 'react-native-elements/dist/header';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  TextInput,
+} from 'react-native';
+import { Header, Input } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconFont from 'react-native-vector-icons/FontAwesome';
 import { unit, getHitSlop } from '@stylesheets';
 import { useTranslation } from 'react-i18next';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
+import BlankView from '@components/Common/BlankView';
 import _ from 'lodash';
-import { apiKey } from '../../apiKey';
 
 const Search = () => {
-  const [searchData, setSearchData] = useState(null);
-  const [keyword, setKeyword] = useState('');
+  const [isActive, setActive] = useState(false);
+  const [registerName, setRegisterName] = useState('');
+  const [registerCategory, setRegisterCategory] = useState('');
+  const [registerRating, setRegisterRating] = useState('');
+
   const navigation = useNavigation();
 
   const { i18n } = useTranslation();
+  console.log('registerName :>> ', registerName);
+  const handleChangeTextInfo = (type, text) => {
+    switch (type) {
+      case 'name':
+        setRegisterName(text);
+        break;
+      case 'category':
+        setRegisterCategory(text);
+        break;
+      case 'rating':
+        setRegisterRating(text);
+        break;
+      default:
+        return;
+    }
+  };
 
   const handleClickGoBack = () => {
     navigation.goBack(null);
+  };
+
+  const handleClickRegisterPlace = () => {
+    navigation.push('Place');
   };
 
   const RenderHeaderLeft = () => {
@@ -59,67 +91,73 @@ const Search = () => {
   };
 
   return (
-    <>
+    <View style={styles.viewContainer}>
       <Header
         placement="left"
         leftComponent={<RenderHeaderLeft />}
         centerComponent={<RenderHeaderCenter />}
-        rightComponent={<RenderHeaderRight activeSatus={false} />}
+        rightComponent={<RenderHeaderRight activeSatus={isActive} />}
         leftContainerStyle={styles.headerLeftContainer}
         containerStyle={styles.headerContainer}
       />
-
-      <View style={styles.inputContainer}>
-        <GooglePlacesAutocomplete
-          minLength={2}
-          autoFocus={false}
-          listViewDisplayed="auto"
-          placeholder={i18n.t('search')}
-          returnKeyType={'default'}
-          fetchDetails
-          onPress={(data, details = null) => {
-            // 'details' is provided when fetchDetails = true
-            console.log(data, details);
-          }}
-          query={{
-            key: apiKey,
-            language: 'en',
-          }}
-          // requestUrl={{
-          //   url: 'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api',
-          //   useOnPlatform: 'web',
-          // }}
-          // currentLocation
-          // currentLocationLabel="Current location"
-          onFail={error => console.error(error)}
-          getDefaultValue={() => ''}
-          debounce={20}
-          styles={{
-            textInputContainer: {
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-            textInput: {
-              height: unit(44),
-              fontSize: 18,
-            },
-            predefinedPlacesDescription: {
-              color: '#1faadb',
-            },
-          }}
-        />
-      </View>
-      <View style={styles.container}></View>
-    </>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior="padding"
+        enabled
+        keyboardVerticalOffset={unit(10)}>
+        <ScrollView style={{ flex: 1 }}>
+          <View style={styles.container}>
+            <BlankView size={unit(10)} />
+            <View style={styles.textContainer}>
+              <Input
+                placeholder="식당 이름"
+                onChangeText={text => handleChangeTextInfo('name', text)}
+              />
+            </View>
+            <BlankView size={unit(10)} />
+            <View style={styles.textContainer}>
+              <Input
+                placeholder="카테고리(ex. 분식, 카페 등)"
+                onChangeText={text => handleChangeTextInfo('category', text)}
+              />
+            </View>
+            <BlankView size={unit(10)} />
+            <View style={styles.textContainer}>
+              <Input
+                placeholder="만족도"
+                onChangeText={text => handleChangeTextInfo('rating', text)}
+              />
+            </View>
+            <BlankView size={unit(10)} />
+            <TouchableOpacity onPress={handleClickRegisterPlace}>
+              <View style={[styles.textContainer]}>
+                <BlankView size={unit(10)} horizontal />
+                <View style={styles.spotContainer}>
+                  <Text style={styles.text}>위치 등록 </Text>
+                  <IconFont name="angle-right" size={unit(20)} color="gray" />
+                </View>
+                <BlankView size={unit(10)} horizontal />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  viewContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+    paddingRight: unit(12),
+    paddingLeft: unit(12),
   },
   headerContainer: {
     backgroundColor: '#fff',
@@ -157,6 +195,22 @@ const styles = StyleSheet.create({
     marginRight: unit(10),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  textContainer: {
+    height: unit(40),
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: unit(17),
+    paddingBottom: unit(18),
+    color: 'gray',
+  },
+  spotContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
   },
 });
 

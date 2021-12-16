@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, Platform } from 'react-native';
+import { useSelector } from 'react-redux';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { SearchInput, CategoryTab } from '@components/Home';
 import { requestTrackingPermission } from 'react-native-tracking-transparency';
@@ -18,6 +19,9 @@ const defaultLogntitude = 127.02579856902875;
 
 const Home = () => {
   const [mapWidth, setMapWidth] = useState('99%');
+  const placeList = useSelector(state => state);
+
+  console.log(`placeList`, placeList);
 
   const mapRef = useRef(null);
 
@@ -47,7 +51,7 @@ const Home = () => {
       <MapView
         ref={mapRef}
         style={[styles.map, { width: mapWidth }]}
-        provider={PROVIDER_GOOGLE}
+        provider={_.isEqual(Platform.OS, 'ios') ? '' : PROVIDER_GOOGLE}
         initialRegion={{
           latitude: defaultLatitude,
           longitude: defaultLogntitude,
@@ -85,7 +89,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: 'red',
   },
   map: {
     flex: 1,
