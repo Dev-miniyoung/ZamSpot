@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
-  TextInput,
 } from 'react-native';
 import { Header, Input } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
@@ -14,20 +13,40 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconFont from 'react-native-vector-icons/FontAwesome';
 import { unit, getHitSlop } from '@stylesheets';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import BlankView from '@components/Common/BlankView';
 import _ from 'lodash';
+
+import { setRegisterPlace } from '../../redux/registerPlace';
 
 const Search = () => {
   const [isActive, setActive] = useState(false);
   const [registerName, setRegisterName] = useState('');
   const [registerCategory, setRegisterCategory] = useState('');
-  const [registerRating, setRegisterRating] = useState('');
+  const [registerDesc, setRegisterDesc] = useState('');
+  const [registerRegion, setRegisterRegion] = useState({});
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (onRegisterStatus()) {
+      setActive(true);
+    }
+  }, [registerName, registerCategory, registerDesc, registerRegion]);
 
   const navigation = useNavigation();
 
   const { i18n } = useTranslation();
-  console.log('registerName :>> ', registerName);
+
+  const onRegisterStatus = () => {
+    return _.every(
+      [registerName, registerCategory, registerDesc, registerRegion],
+      item => !_.isEmpty(item),
+    );
+  };
+
   const handleChangeTextInfo = (type, text) => {
     switch (type) {
       case 'name':
@@ -37,10 +56,33 @@ const Search = () => {
         setRegisterCategory(text);
         break;
       case 'rating':
-        setRegisterRating(text);
+        setRegisterDesc(text);
         break;
       default:
         return;
+    }
+  };
+
+  const handleRegisterPlace = () => {
+    if (isActive) {
+      dispatch(
+        setRegisterPlace(
+          registerName,
+          registerCategory,
+          registerDesc,
+          registerRegion,
+        ),
+      );
+      AsyncStorage.setItem(
+        'placeList',
+        JSON.stringify({
+          name: registerName,
+          category: registerCategory,
+          rating: registerDesc,
+          place: registerRegion,
+        }),
+      );
+      navigation.goBack(null);
     }
   };
 
@@ -49,7 +91,14 @@ const Search = () => {
   };
 
   const handleClickRegisterPlace = () => {
-    navigation.push('Place');
+    navigation.push('Place', { setRegionPlace: handleSetRegionPlace });
+  };
+
+  const handleSetRegionPlace = (lat, lon) => {
+    setRegisterRegion({
+      latitude: lat,
+      longitude: lon,
+    });
   };
 
   const RenderHeaderLeft = () => {
@@ -75,13 +124,13 @@ const Search = () => {
   const RenderHeaderRight = ({ activeSatus }) => {
     return (
       <TouchableOpacity
-        onPress={handleClickGoBack}
+        onPress={handleRegisterPlace}
         hitSlop={getHitSlop(10, 10, 10, 10)}>
         <View style={styles.rightHeader}>
           <Text
             style={[
               styles.titleText,
-              { color: activeSatus ? 'skyblue' : 'gray' },
+              { color: activeSatus ? '#61c8ff' : 'gray' },
             ]}>
             {i18n.t('submit')}
           </Text>
@@ -131,7 +180,7 @@ const Search = () => {
             <BlankView size={unit(10)} />
             <TouchableOpacity onPress={handleClickRegisterPlace}>
               <View style={[styles.textContainer]}>
-                <BlankView size={unit(10)} horizontal />
+                <BlankView size={unit(8)} horizontal />
                 <View style={styles.spotContainer}>
                   <Text style={styles.text}>위치 등록 </Text>
                   <IconFont name="angle-right" size={unit(20)} color="gray" />
@@ -203,7 +252,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontSize: unit(17),
+    fontSize: unit(15),
     paddingBottom: unit(18),
     color: 'gray',
   },

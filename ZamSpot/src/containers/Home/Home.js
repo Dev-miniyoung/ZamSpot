@@ -1,12 +1,15 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet, View, Dimensions, Platform } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { StyleSheet, View, Dimensions, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { SearchInput, CategoryTab } from '@components/Home';
 import { requestTrackingPermission } from 'react-native-tracking-transparency';
-
 import { unit } from '@stylesheets';
 import _ from 'lodash';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useDispatch } from 'react-redux';
+
+import { initRegisterPlace } from '../../redux/registerPlace';
 
 const screen = Dimensions.get('window');
 const ASPECT_RATIO = screen.width / screen.height;
@@ -15,13 +18,20 @@ const LATITUDE_DELTA = 0.01;
 const LOGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const defaultLatitude = 37.49954770759741;
-const defaultLogntitude = 127.02579856902875;
+const defaultLongtitude = 127.02579856902875;
 
 const Home = () => {
   const [mapWidth, setMapWidth] = useState('99%');
+  const [loading, setLoading] = useState(true);
   const placeList = useSelector(state => state);
 
+  const dispatch = useDispatch();
+
   console.log(`placeList`, placeList);
+
+  useEffect(() => {
+    initRegisterPlaceList();
+  }, []);
 
   const mapRef = useRef(null);
 
@@ -29,32 +39,56 @@ const Home = () => {
     setMapWidth('100%');
   };
 
-  // const animateToCoordinate = (lat, long) => {
-  //   mapRef?.animateToRegion(
-  //     {
-  //       latitude: lat,
-  //       longitude: long,
-  //     },
-  //     1000,
-  //   );
-  // };
+  const handleClickItemAnimateToCoordinate = (lat, long) => {
+    mapRef.current?.animateToRegion(
+      {
+        latitude: Number(lat),
+        longitude: Number(long),
+        longitudeDelta: LOGITUDE_DELTA,
+        latitudeDelta: LATITUDE_DELTA,
+      },
+      1000,
+    );
+  };
+
+  const initRegisterPlaceList = async () => {
+    try {
+      const response = await AsyncStorage.getItem('placeList');
+
+      if (!_.isNil(response)) {
+        dispatch(initRegisterPlace(JSON.parse(response)));
+      }
+    } catch (e) {
+      console.log(`asyncStorage Error : `, e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const trackingStatus = async () => {
     const response = await requestTrackingPermission();
   };
+
   if (trackingStatus() === 'authorized' || trackingStatus() === 'unavailable') {
     return null;
   }
+
+  if (loading)
+    return (
+      <View style={styles.indicatorContainer}>
+        <ActivityIndicator size="small" color="#0000ff" />
+      </View>
+    );
 
   return (
     <View style={styles.container}>
       <MapView
         ref={mapRef}
         style={[styles.map, { width: mapWidth }]}
-        provider={_.isEqual(Platform.OS, 'ios') ? '' : PROVIDER_GOOGLE}
+        provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: defaultLatitude,
-          longitude: defaultLogntitude,
+          longitude: defaultLongtitude,
           latitudeDelta: LATITUDE_DELTA,
           longitudeDelta: LOGITUDE_DELTA,
         }}
@@ -78,7 +112,10 @@ const Home = () => {
         <SearchInput />
       </View>
       <View style={styles.categoryView}>
-        <CategoryTab />
+        <CategoryTab
+          list={placeList}
+          onClickItem={handleClickItemAnimateToCoordinate}
+        />
       </View>
     </View>
   );
@@ -107,6 +144,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: unit(120),
     left: unit(0),
+  },
+  indicatorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -5,10 +5,9 @@ import {
   Dimensions,
   Text,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconFont from 'react-native-vector-icons/FontAwesome';
 import { Header } from 'react-native-elements';
@@ -27,12 +26,13 @@ const defaultLatitude = 37.49954770759741;
 const defaultLogntitude = 127.02579856902875;
 
 const Place = () => {
-  const [isActive, setActive] = useState(false);
   const [mapWidth, setMapWidth] = useState('99%');
+  const [currentRegion, setCurrentRegion] = useState(null);
 
   const mapRef = useRef(null);
   const { i18n } = useTranslation();
   const navigation = useNavigation();
+  const route = useRoute();
 
   const updateMapWidth = () => {
     setMapWidth('100%');
@@ -40,6 +40,16 @@ const Place = () => {
 
   const handleClickGoBack = () => {
     navigation.goBack(null);
+  };
+
+  const handleSubmitRegion = () => {
+    if (!_.isNil(currentRegion)) {
+      route.params?.setRegionPlace(
+        currentRegion.latitude,
+        currentRegion.longitude,
+      );
+      navigation.goBack(null);
+    }
   };
 
   const RenderHeaderLeft = () => {
@@ -62,22 +72,21 @@ const Place = () => {
     );
   };
 
-  const RenderHeaderRight = ({ activeSatus }) => {
+  const RenderHeaderRight = () => {
     return (
       <TouchableOpacity
-        onPress={handleClickGoBack}
+        onPress={handleSubmitRegion}
         hitSlop={getHitSlop(10, 10, 10, 10)}>
         <View style={styles.rightHeader}>
-          <Text
-            style={[
-              styles.titleText,
-              { color: activeSatus ? 'skyblue' : 'gray' },
-            ]}>
-            {i18n.t('submit')}
-          </Text>
+          <Text style={styles.submitText}>{i18n.t('submit')}</Text>
         </View>
       </TouchableOpacity>
     );
+  };
+
+  const onRegionChange = region => {
+    console.log(`region`, region);
+    setCurrentRegion(region);
   };
 
   return (
@@ -86,7 +95,7 @@ const Place = () => {
         placement="left"
         leftComponent={<RenderHeaderLeft />}
         centerComponent={<RenderHeaderCenter />}
-        rightComponent={<RenderHeaderRight activeSatus={isActive} />}
+        rightComponent={<RenderHeaderRight />}
         leftContainerStyle={styles.headerLeftContainer}
         containerStyle={styles.headerContainer}
       />
@@ -94,7 +103,7 @@ const Place = () => {
         <MapView
           ref={mapRef}
           style={[styles.map, { width: mapWidth }]}
-          provider={_.isEqual(Platform.OS, 'ios') ? '' : PROVIDER_GOOGLE}
+          provider={PROVIDER_GOOGLE}
           initialRegion={{
             latitude: defaultLatitude,
             longitude: defaultLogntitude,
@@ -104,6 +113,7 @@ const Place = () => {
           showsMyLocationButton
           showsUserLocation
           onMapReady={updateMapWidth}
+          onRegionChange={onRegionChange}
         />
         <View style={styles.pinContainer}>
           <IconFont name="map-pin" size={unit(40)} color="red" />
@@ -156,6 +166,10 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: unit(16),
+  },
+  submitText: {
+    fontSize: unit(16),
+    color: '#61c8ff',
   },
   rightHeader: {
     marginRight: unit(10),
