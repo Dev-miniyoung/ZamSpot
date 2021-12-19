@@ -12,9 +12,7 @@ import BlankView from '../Common/BlankView';
 import _ from 'lodash';
 
 const CategoryTab = ({ list, onClickItem }) => {
-  console.log(`list@@2`, list);
   const renderItem = ({ item }) => {
-    console.log(`item`, item);
     return (
       <TouchableOpacity
         onPress={() => onClickItem(item.place.latitude, item.place.longitude)}>
@@ -37,7 +35,6 @@ const CategoryTab = ({ list, onClickItem }) => {
 
   if (_.isNil(list?.registerPlace) || _.isEmpty(list?.registerPlace))
     return null;
-  console.log(`list?.registerPlace`, list?.registerPlace);
   return (
     <>
       <FlatList

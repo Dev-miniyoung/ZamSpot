@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, Dimensions, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import { SearchInput, CategoryTab } from '@components/Home';
 import { requestTrackingPermission } from 'react-native-tracking-transparency';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { unit } from '@stylesheets';
 import _ from 'lodash';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -26,8 +27,6 @@ const Home = () => {
   const placeList = useSelector(state => state);
 
   const dispatch = useDispatch();
-
-  console.log(`placeList`, placeList);
 
   useEffect(() => {
     initRegisterPlaceList();
@@ -95,18 +94,20 @@ const Home = () => {
         showsMyLocationButton
         showsUserLocation
         onMapReady={updateMapWidth}>
-        {/* <Marker
-          coordinate={{
-            latitude: 37.49954770759741,
-            longitude: 127.02579856902875,
-          }}
-          title={i18n.t('zamface')}
-          description=""
-          pinColor="black">
-          {_.isNumber(images.zamfaceLogo) && (
-            <Image source={images.zamfaceLogo} style={styles.iconLogo} />
-          )}
-        </Marker> */}
+        {placeList.registerPlace.map(item => {
+          return (
+            <Marker
+              coordinate={{
+                latitude: item.place.latitude,
+                longitude: item.place.longitude,
+              }}
+              title={item.name}
+              description={item.desc}
+              pinColor="black">
+              <Icon name="food-bank" size={unit(44)} color="#4fc4ff" />
+            </Marker>
+          );
+        })}
       </MapView>
       <View style={styles.searchView}>
         <SearchInput />
